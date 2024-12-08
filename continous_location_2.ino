@@ -1,41 +1,53 @@
-#include <BlynkSimpleEsp32.h>
 #include <TinyGPS++.h>
-#include <HardwareSerial.h>
+#include <BlynkSimpleSIM800.h>
+#include <SoftwareSerial.h>
 
 // Blynk Auth Token
-#define BLYNK_AUTH_TOKEN "Your_Auth_Token"
+#define BLYNK_AUTH_TOKEN "Your_Blynk_Auth_Token"
 
-const char* ssid = "Your_WiFi_SSID"; 
-const char* password = "Your_WiFi_Password"; 
+// Define APN credentials for your SIM card (ask your carrier for these details)
+#define GPRS_APN "your_apn"     
+#define GPRS_USER ""            
+#define GPRS_PASS ""            
 
+// Initialize Blynk and GPS
+SoftwareSerial sim800l(3, 1); 
 TinyGPSPlus gps;
-HardwareSerial mySerial(1);  
-int gpsRxPin = 16; 
-int gpsTxPin = 17;  
 
-#define LATITUDE_PIN V1
-#define LONGITUDE_PIN V2
+#define RX2 16
+#define TX2 17
+HardwareSerial gpsSerial(2); 
 
 void setup() {
+  
   Serial.begin(115200);
-  
-  mySerial.begin(9600, SERIAL_8N1, gpsRxPin, gpsTxPin);
-  
-  Blynk.begin(BLYNK_AUTH_TOKEN, ssid, password);
+
+  gpsSerial.begin(9600, SERIAL_8N1, RX2, TX2);
+
+  sim800l.begin(9600);
+
+  Blynk.begin(sim800l, BLYNK_AUTH_TOKEN, GPRS_APN, GPRS_USER, GPRS_PASS);
+
+  Serial.println("Setup completed. Waiting for GPS data...");
 }
 
 void loop() {
-  while (mySerial.available() > 0) {
-    gps.encode(mySerial.read());
-    
+  Blynk.run();
+
+  while (gpsSerial.available() > 0) {
+    gps.encode(gpsSerial.read());
+
     if (gps.location.isUpdated()) {
-      double latitude = gps.location.lat();  
-      double longitude = gps.location.lng();  
-      
-      Blynk.virtualWrite(LATITUDE_PIN, latitude);
-      Blynk.virtualWrite(LONGITUDE_PIN, longitude);
+      double latitude = gps.location.lat();
+      double longitude = gps.location.lng();
+
+      Serial.print("Latitude: ");
+      Serial.println(latitude);
+      Serial.print("Longitude: ");
+      Serial.println(longitude);
+
+      Blynk.virtualWrite(V1, latitude); 
+      Blynk.virtualWrite(V2, longitude);
     }
   }
-  
-  Blynk.run();
 }
