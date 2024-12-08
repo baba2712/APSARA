@@ -1,0 +1,1 @@
+If the GPS data is not updating, check the Serial Monitor for debugging. You can also print the GPS data to the Serial Monitor (Serial.print(latitude) and Serial.print(longitude)) to see if it's being read correctly.
