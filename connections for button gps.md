@@ -14,12 +14,4 @@
 
 ---
 
-## **2️⃣ Connections for Virtual Button (Blynk)**
-| **Component**        | **ESP32 Pin**  | **Description**                 |
-|---------------------|----------------|-----------------------------------|
-| **Neo-6M VCC**       | **3.3V**       | Power for GPS                    |
-| **Neo-6M GND**       | **GND**        | Ground for GPS                   |
-| **Neo-6M TX**        | **GPIO 16 (RX1)** | Data from GPS to ESP32 (RX)    |
-| **Neo-6M RX**        | **GPIO 17 (TX1)** | Data from ESP32 to GPS (TX)    |
-
 
